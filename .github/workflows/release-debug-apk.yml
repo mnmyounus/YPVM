@@ -28,16 +28,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Decode CI signing keystore
-        # Optional: if these secrets aren't configured, this step is a
-        # no-op and app/build.gradle.kts falls back to AGP's normal
-        # auto-generated debug keystore, so the build still succeeds —
-        # it just won't be update-compatible between CI runs.
-        if: ${{ secrets.YPVM_DEBUG_KEYSTORE_B64 != '' }}
-        env:
-          YPVM_DEBUG_KEYSTORE_B64: ${{ secrets.YPVM_DEBUG_KEYSTORE_B64 }}
-        run: echo "$YPVM_DEBUG_KEYSTORE_B64" | base64 -d > app/ci-debug.keystore
-
       - name: Build debug APK
         env:
           YPVM_DEBUG_KEYSTORE: ${{ secrets.YPVM_DEBUG_KEYSTORE_B64 != '' && 'ci-debug.keystore' || '' }}
