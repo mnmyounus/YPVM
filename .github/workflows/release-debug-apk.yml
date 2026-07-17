@@ -1,48 +1,36 @@
 name: Build & Release Debug APK
-
 on:
   push:
     branches: [ "main", "release" ]
   pull_request:
     branches: [ "main", "release" ]
-
 # Lets the auto-release step create/update a GitHub Release and upload the
 # APK asset with the default GITHUB_TOKEN — no extra PAT needed.
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: wrapper
           validate-wrappers: false
-
+      - name: Make gradlew executable
+        run: chmod +x gradlew
       - name: Build debug APK
-        env:
-          YPVM_DEBUG_KEYSTORE: ${{ secrets.YPVM_DEBUG_KEYSTORE_B64 != '' && 'ci-debug.keystore' || '' }}
-          YPVM_KEYSTORE_PASSWORD: ${{ secrets.YPVM_KEYSTORE_PASSWORD }}
-          YPVM_KEY_ALIAS: ${{ secrets.YPVM_KEY_ALIAS }}
-          YPVM_KEY_PASSWORD: ${{ secrets.YPVM_KEY_PASSWORD }}
         run: ./gradlew assembleDebug --stacktrace
-
       - name: Determine release tag
         id: version
         run: echo "tag=debug-$(date +'%Y%m%d')-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
-
       - name: Draft GitHub Release with APK asset
         uses: softprops/action-gh-release@v2
         with:
