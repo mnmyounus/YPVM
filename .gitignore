@@ -1,0 +1,23 @@
+# Build outputs
+/build/
+/app/build/
+*.apk
+*.aab
+
+# Gradle
+.gradle/
+gradle/wrapper/dists/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+local.properties
+.cxx/
+captures/
+
+# Keystores — never commit real signing material
+*.keystore
+*.jks
+
+# OS
+.DS_Store
