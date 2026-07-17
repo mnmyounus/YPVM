@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/lock_screen_background"
+    android:padding="32dp">
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_shield"
+        android:contentDescription="@string/app_name"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_pin_prompt"
+        android:textColor="@color/lock_screen_text"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/pinInput"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberPassword"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:letterSpacing="0.4"
+        android:maxLength="12"
+        android:imeOptions="actionDone"
+        android:autofillHints="" />
+
+    <Button
+        android:id="@+id/confirmButton"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/unlock" />
+
+    <!--
+      Deliberately a plain, labeled, always-visible control — not a hidden
+      gesture. Anyone using the device while it's in Guest Mode can see this
+      exists; it simply won't do anything without the Primary PIN.
+      See docs/ARCHITECTURE.md, "Design decisions" section, for why.
+    -->
+    <TextView
+        android:id="@+id/emergencyUnlockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/emergency_unlock_title"
+        android:textColor="@color/lock_screen_link"
+        android:textSize="14sp"
+        android:padding="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground" />
+
+</LinearLayout>

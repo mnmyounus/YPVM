@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YPVM</string>
+    <string name="enter_pin_prompt">Enter PIN</string>
+    <string name="unlock">Unlock</string>
+    <string name="incorrect_pin">Incorrect PIN</string>
+    <string name="lockout_message">Too many attempts. Try again in %1$d s.</string>
+
+    <!-- This label is intentionally always visible on-screen, in both Host
+         and Guest sessions. It is the sole recovery path into Host Mode
+         besides entering the Primary PIN directly, and it only works with
+         the correct PIN — visibility of the option is the point. -->
+    <string name="emergency_unlock_title">Emergency Unlock</string>
+    <string name="emergency_unlock_message">Enter the Primary PIN to exit to the Host environment.</string>
+    <string name="emergency_unlock_hint">Primary PIN</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="guest_mode_title">Guest Mode</string>
+    <string name="watchdog_notification_title">YPVM is protecting this device</string>
+</resources>

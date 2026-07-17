@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lock_screen_background">#0F1115</color>
+    <color name="lock_screen_text">#F5F5F5</color>
+    <color name="lock_screen_link">#7AA2F7</color>
+    <color name="brand_primary">#2E5AAC</color>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Ypvm" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+    </style>
+
+    <style name="Theme.Ypvm.LockScreen" parent="Theme.Ypvm">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/lock_screen_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+</resources>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <application
+        android:name=".YpvmApplication"
+        android:allowBackup="false"
+        android:icon="@drawable/ic_shield"
+        android:roundIcon="@drawable/ic_shield"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Ypvm"
+        android:usesCleartextTraffic="false">
+
+        <!--
+          Device Owner provisioning target. YPVM has no effect on the device
+          until this admin is activated — see docs/ARCHITECTURE.md for the
+          adb command. Everything this app restricts is done through the
+          documented DevicePolicyManager / UserManager surface; there is no
+          hidden or undocumented API use anywhere in this project.
+        -->
+        <receiver
+            android:name=".admin.YpvmDeviceAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_receiver" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
+                <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+          Registered as a HOME app so addPersistentPreferredActivity /
+          lock-task relaunching brings this screen back to the foreground
+          after a crash or reboot. See WatchdogService for the fail-secure
+          relaunch loop and ProfileManager.restoreNativeKeyguard() for the
+          fallback when relaunching itself fails.
+        -->
+        <activity
+            android:name=".ui.LockScreenActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.Ypvm.LockScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.GuestLauncherActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Ypvm" />
+
+        <service
+            android:name=".watchdog.WatchdogService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="ypvm-lockscreen-watchdog" />
+        </service>
+
+        <receiver
+            android:name=".watchdog.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>
