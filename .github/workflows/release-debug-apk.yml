@@ -24,6 +24,8 @@ jobs:
         with:
           gradle-version: wrapper
           validate-wrappers: false
+      - name: Regenerate Gradle wrapper
+        run: gradle wrapper --gradle-version 8.9 --distribution-type bin
       - name: Make gradlew executable
         run: chmod +x gradlew
       - name: Build debug APK
