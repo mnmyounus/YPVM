@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YPVM — Your Private Virtual Machine</title>
+<meta name="description" content="Dual-PIN Android lock screen for parents managing a shared family device or anyone lending out a phone they own. Whitelisted Guest profile built on Android's own Device Owner APIs.">
+<meta name="google-site-verification" content="PASTE_HERE">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"YPVM","alternateName":"Your Private Virtual Machine","applicationCategory":"UtilitiesApplication","operatingSystem":"Android 9+","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"MNM YOUNUS"}}
+</script>
+<style>
+  :root{
+    --bg:#0F1214;--bg-raised:#181C1F;--bg-inset:#0A0D0F;--line:#252A2E;--line-soft:#1B1F22;
+    --text:#EEF1F0;--text-dim:#9DA5A2;--text-faint:#5A625F;
+    --host:#4C9AFF;--guest:#FFAB4C;--accent:#4C9AFF;
+    --sans:'Inter',-apple-system,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+  header{position:sticky;top:0;z-index:50;background:rgba(15,18,20,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft);}
+  .headbar{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;}
+  .brand .split{display:flex;width:20px;height:20px;border-radius:5px;overflow:hidden;}
+  .brand .split div:first-child{flex:1;background:var(--host);}
+  .brand .split div:last-child{flex:1;background:var(--guest);}
+  nav{display:flex;gap:2px;}
+  nav button{background:none;border:none;color:var(--text-dim);font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:7px;cursor:pointer;}
+  nav button:hover,nav button.active{color:var(--text);background:var(--bg-raised);}
+  .head-cta{font-family:var(--mono);font-size:12.5px;font-weight:600;background:var(--bg-inset);border:1px solid var(--line);padding:7px 13px;border-radius:7px;}
+  @media (max-width:760px){nav{display:none;}}
+  main{display:none;}main.active{display:block;}
+  .hero{padding:80px 0 56px;}
+  .context-banner{
+    background:var(--bg-raised);border:1px solid var(--line);border-radius:10px;
+    padding:12px 18px;font-size:13px;color:var(--text-dim);margin-bottom:32px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .context-banner svg{width:16px;height:16px;stroke:var(--accent);flex-shrink:0;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+  @media (max-width:900px){.hero-grid{grid-template-columns:1fr;}}
+  .eyebrow{font-family:var(--mono);font-size:12px;color:var(--text-faint);margin-bottom:18px;}
+  h1{font-size:40px;line-height:1.12;font-weight:800;letter-spacing:-.02em;margin-bottom:20px;}
+  h1 span{color:var(--accent);}
+  .lede{font-size:17px;color:var(--text-dim);max-width:48ch;margin-bottom:30px;}
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px;}
+  .btn-primary{background:var(--text);color:var(--bg);font-weight:700;font-size:14.5px;padding:13px 22px;border-radius:8px;display:inline-flex;gap:8px;align-items:center;}
+  .btn-secondary{border:1px solid var(--line);color:var(--text-dim);font-weight:600;font-size:14.5px;padding:13px 22px;border-radius:8px;}
+  .split-mock{background:var(--bg-raised);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .split-half{padding:22px;}
+  .split-half.host{border-bottom:1px solid var(--line);}
+  .split-tag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:10px;}
+  .split-half.host .split-tag{color:var(--host);}
+  .split-half.guest .split-tag{color:var(--guest);}
+  .split-half p{font-size:12.5px;color:var(--text-faint);line-height:1.6;}
+  .app-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+  .app-chip{font-family:var(--mono);font-size:10.5px;background:var(--bg-inset);border:1px solid var(--line);padding:4px 8px;border-radius:5px;color:var(--text-dim);}
+  section{padding:68px 0;border-top:1px solid var(--line-soft);}
+  .section-head{max-width:640px;margin-bottom:40px;}
+  .section-tag{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:10px;}
+  h2{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:12px;}
+  .section-desc{color:var(--text-dim);font-size:15.5px;line-height:1.65;}
+  .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden;}
+  @media (max-width:820px){.fgrid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.fgrid{grid-template-columns:1fr;}}
+  .fcard{background:var(--bg-raised);padding:24px 20px;}
+  .fcard h3{font-size:14.5px;font-weight:700;margin-bottom:6px;}
+  .fcard p{font-size:13px;color:var(--text-faint);line-height:1.55;}
+  .decline-panel{background:var(--bg-raised);border:1px solid var(--line);border-radius:14px;padding:30px;margin-top:28px;}
+  .decline-panel h4{font-size:16px;font-weight:700;margin-bottom:14px;}
+  .decline-panel .row{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line-soft);}
+  .decline-panel .row:first-of-type{border-top:none;}
+  .decline-panel .row .no{color:var(--guest);font-family:var(--mono);font-size:12px;font-weight:700;flex-shrink:0;width:90px;}
+  .decline-panel .row p{font-size:13.5px;color:var(--text-dim);line-height:1.6;}
+  .arch-block{background:var(--bg-inset);border:1px solid var(--line);border-radius:12px;padding:24px;font-family:var(--mono);font-size:12.5px;line-height:1.8;color:var(--text-dim);white-space:pre;overflow-x:auto;}
+  .arch-block .lbl{color:var(--accent);}
+  .faq-item{padding:18px 0;border-top:1px solid var(--line-soft);}
+  .faq-item h4{font-size:14.5px;font-weight:700;margin-bottom:8px;}
+  .faq-item p{font-size:13.5px;color:var(--text-faint);line-height:1.6;}
+  .gh-hero{text-align:center;padding:60px 0;background:var(--bg-raised);border:1px solid var(--line);border-radius:16px;}
+  .gh-hero h2{margin-bottom:10px;}
+  .gh-hero p{color:var(--text-dim);max-width:44ch;margin:0 auto 26px;}
+  .repo-line{font-family:var(--mono);font-size:13px;color:var(--text-dim);background:var(--bg-inset);border:1px solid var(--line);border-radius:8px;padding:11px 16px;display:inline-flex;gap:10px;}
+  footer{border-top:1px solid var(--line-soft);padding:28px 0;}
+  .foot-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-faint);}
+  .foot-links{display:flex;gap:20px;}
+</style>
+</head>
+<body>
+<header><div class="wrap headbar">
+  <div class="brand"><span class="split"><div></div><div></div></span>YPVM</div>
+  <nav>
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="features">Features</button>
+    <button class="tab-btn" data-tab="security">Security</button>
+    <button class="tab-btn" data-tab="docs">Docs</button>
+    <button class="tab-btn" data-tab="github">GitHub</button>
+  </nav>
+  <a class="head-cta" href="https://github.com/mnmyounus/YPVM" target="_blank" rel="noopener">Source</a>
+</div></header>
+
+<main class="active" id="overview">
+  <section class="hero" style="border-top:none;">
+    <div class="wrap">
+      <div class="context-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+        Built for a device you own: handing a phone to your kid, lending yours out for the afternoon, or keeping a shared family device usable by everyone in the house.
+      </div>
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">ANDROID DEVICE OWNER API · OPEN SOURCE</div>
+          <h1>One phone. Two PINs. A Guest mode that can't wander off-list.</h1>
+          <p class="lede">YPVM splits a single Android device into your full, unrestricted Host environment and a separate Guest environment that can only open apps you've whitelisted — for parents setting up a kid's device, or anyone lending their own phone out for a while.</p>
+          <div class="hero-ctas">
+            <a class="btn-primary" href="#" onclick="switchTab('docs');return false;">Quickstart</a>
+            <a class="btn-secondary" href="#" onclick="switchTab('security');return false;">Read the design reasoning</a>
+          </div>
+        </div>
+        <div class="split-mock">
+          <div class="split-half host">
+            <div class="split-tag">HOST · PIN A</div>
+            <p>Full unrestricted access — your accounts, your apps, your settings.</p>
+          </div>
+          <div class="split-half guest">
+            <div class="split-tag">GUEST · PIN B</div>
+            <p>Whitelisted apps only. Sandboxed Work Profile. Nothing outside the list.</p>
+            <div class="app-chips"><span class="app-chip">Camera</span><span class="app-chip">YouTube Kids</span><span class="app-chip">Drawing</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<main id="features">
+  <section style="border-top:none;padding-top:64px;">
+    <div class="wrap">
+      <div class="section-head"><div class="section-tag">Features</div><h2>Built on Android's own APIs, not a workaround</h2></div>
+      <div class="fgrid">
+        <div class="fcard"><h3>Dual-PIN lock screen</h3><p>One PIN opens Host, the other opens Guest — no menu to fumble through in front of the person you handed the phone to.</p></div>
+        <div class="fcard"><h3>App whitelist</h3><p>Guest's Work Profile can only launch apps explicitly allowed by whoever set up Host.</p></div>
+        <div class="fcard"><h3>Visible Emergency Unlock</h3><p>A clearly-labeled control that returns to Host from Guest mode — see Security for why it's visible on purpose.</p></div>
+        <div class="fcard"><h3>Crash-resilient watchdog</h3><p>A boot receiver and relaunch service keep the lock screen enforced even after a crash or reboot.</p></div>
+        <div class="fcard"><h3>Keystore-backed PINs</h3><p>Both PINs are stored via Android Keystore with lockout after repeated failures.</p></div>
+        <div class="fcard"><h3>Device Owner provisioning</h3><p>Set up fresh via <span style="font-family:var(--mono);font-size:11.5px;">dpm set-device-owner</span> before any account is signed in — no MDM subscription required.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<main id="security">
+  <section style="border-top:none;padding-top:64px;">
+    <div class="wrap">
+      <div class="section-head"><div class="section-tag">Security</div><h2>What was deliberately left out — and why</h2>
+      <p class="section-desc">Two capabilities that would have made Guest mode harder to notice were considered and rejected. Both are explained in full in the repo's ARCHITECTURE.md.</p></div>
+      <div class="decline-panel">
+        <h4>Design decisions</h4>
+        <div class="row">
+          <div class="no">NOT BUILT</div>
+          <p>A hidden or invisible gesture to silently return to Host from within Guest mode.</p>
+        </div>
+        <div class="row">
+          <div class="no">NOT BUILT</div>
+          <p>Any method to defeat a Host-authenticated ADB session from inside Guest mode.</p>
+        </div>
+        <div class="row">
+          <div class="no">BUILT INSTEAD</div>
+          <p>A visible, clearly-labeled <b style="color:var(--text);">Emergency Unlock</b> control. It does the same job — returning control to Host — with identical security, without requiring the person using Guest mode to be kept unaware that a privileged mode exists on their own phone.</p>
+        </div>
+      </div>
+      <div class="section-head" style="margin-top:52px;"><div class="section-tag">Architecture</div><h2>Where the boundary actually lives</h2></div>
+      <div class="arch-block">app/src/main/java/com/mnmyounus/ypvm/
+├── admin/      <span class="lbl">Device Owner + Work Profile policy logic</span>
+├── watchdog/   <span class="lbl">Crash-resilient relaunch service + boot receiver</span>
+├── security/   <span class="lbl">Keystore-backed PIN storage and lockout</span>
+└── ui/         <span class="lbl">Lock screen, Guest launcher, Emergency Unlock</span></div>
+      <p style="font-size:13px;color:var(--text-faint);margin-top:18px;">Full write-up, including the security reasoning behind every restriction, lives in <span style="font-family:var(--mono);color:var(--text-dim);">docs/ARCHITECTURE.md</span>.</p>
+    </div>
+  </section>
+</main>
+
+<main id="docs">
+  <section style="border-top:none;padding-top:64px;">
+    <div class="wrap">
+      <div class="section-head"><div class="section-tag">Docs</div><h2>Build &amp; install as Device Owner</h2></div>
+      <div class="arch-block">./gradlew assembleDebug          <span class="lbl"># APK in app/build/outputs/apk/debug/</span>
+./gradlew installDebug
+adb shell dpm set-device-owner \
+    com.mnmyounus.ypvm.debug/com.mnmyounus.ypvm.admin.YpvmDeviceAdminReceiver</span></div>
+      <p style="font-size:13px;color:var(--text-faint);">Device Owner status requires no Google account be signed in yet — this works cleanly on a factory-reset device or a fresh emulator. Full first-run walkthrough (both PINs, provisioning Guest, choosing the whitelist) is in ARCHITECTURE.md §8.</p>
+      <div class="section-head" style="margin-top:48px;"><div class="section-tag">Requirements</div><h2>Toolchain</h2></div>
+      <ul style="color:var(--text-dim);font-size:14px;line-height:2;padding-left:20px;">
+        <li>JDK 17 + Android SDK, or current Android Studio</li>
+        <li>compileSdk/targetSdk 35, minSdk 28 (needed for DPC-initiated Lock Task Mode)</li>
+        <li>Pinned toolchain: AGP 8.7.2, Kotlin 1.9.24, Gradle 8.9 (wrapper included)</li>
+      </ul>
+      <div class="section-head" style="margin-top:48px;"><div class="section-tag">FAQ</div><h2>Common questions</h2></div>
+      <div class="faq-item"><h4>Can the Guest-mode user tell a Host mode exists?</h4><p>Yes — that's intentional. The Emergency Unlock control is visible, not hidden. See Security for the reasoning.</p></div>
+      <div class="faq-item"><h4>Does this need an MDM subscription?</h4><p>No. It uses Android's own Device Owner / Work Profile APIs directly — no third-party mobile device management service involved.</p></div>
+      <div class="faq-item"><h4>What if Android Studio offers an AGP upgrade?</h4><p>Safe to accept. This repo pins a known-stable toolchain for reliable first builds, but nothing depends on deprecated APIs.</p></div>
+    </div>
+  </section>
+</main>
+
+<main id="github">
+  <section style="border-top:none;padding-top:64px;">
+    <div class="wrap">
+      <div class="gh-hero">
+        <h2>Read the reasoning, not just the code</h2>
+        <p>ARCHITECTURE.md explains why every restriction exists — including the ones that were deliberately left out.</p>
+        <a class="repo-line" href="https://github.com/mnmyounus/YPVM" target="_blank" rel="noopener">github.com/mnmyounus/YPVM</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap foot-row">
+  <p>© 2026 MNM YOUNUS</p>
+  <div class="foot-links"><a href="https://github.com/mnmyounus/YPVM" target="_blank">GitHub</a><a href="#" onclick="switchTab('docs');return false;">Docs</a></div>
+</div></footer>
+
+<script>
+  const buttons=document.querySelectorAll('.tab-btn'),mains=document.querySelectorAll('main');
+  function switchTab(id){mains.forEach(m=>m.classList.toggle('active',m.id===id));buttons.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));window.scrollTo({top:0});}
+  buttons.forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+</script>
+</body>
+</html>
